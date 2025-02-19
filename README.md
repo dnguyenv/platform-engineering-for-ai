@@ -1,1 +1,1 @@
-# platform-engineering-for-ai
+# Platform engineering for ai
