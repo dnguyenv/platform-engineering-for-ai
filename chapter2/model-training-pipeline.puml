@@ -1,0 +1,29 @@
+@startuml
+title Model Training Pipeline (Flowchart)
+
+start
+:Ingest/Prepare Data;
+
+repeat
+  :Feature Engineering\n(Transform, Select, etc.);
+  :Train Model;
+  :Evaluate Model Performance;
+
+  if (Performance Acceptable?) then (yes)
+    :Package Best Model\n(Metadata, Version Tag);
+    :Register Model\nin Repo/Registry;
+    break
+  else (no)
+    :Tweak Params/Data;
+  endif
+repeat while (Performance not acceptable)
+
+stop
+
+'legend left
+'- Once the model meets desired criteria, it’s packaged and registered for deployment.
+'- Supports parallel training experiments, such as hyperparameter tuning or comparing multiple algorithms simultaneously.
+'- This iterative approach ensures continuous improvement until desired performance criteria are met.
+'endlegend
+
+@enduml

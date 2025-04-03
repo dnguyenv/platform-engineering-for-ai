@@ -1,0 +1,31 @@
+@startuml
+title Linking Objectives and Key Results in Pipeline Planning
+
+skinparam shadowing false
+
+rectangle "Business Goals" as BG {
+  rectangle "Faster Decision\nMaking"
+  rectangle "Improved Customer\nExperience"
+}
+
+rectangle "Pipeline Objectives" as PO {
+  rectangle "Low Latency Data\nAvailability"
+  rectangle "High Data Quality\nfor Analytics"
+}
+
+rectangle "Key Results" as KR {
+  rectangle "e.g. 95% of events\nprocessed < 5s"
+  rectangle "e.g. <1%\ndata errors"
+}
+
+BG -down-> PO
+PO -down-> KR
+
+note bottom of KR
+  Each Key Result should be:
+  • Quantifiable
+  • Time-bound
+  • Tied directly to an Objective
+end note
+
+@enduml

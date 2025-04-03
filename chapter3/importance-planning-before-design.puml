@@ -1,0 +1,34 @@
+@startuml
+title Planning vs. Ad-Hoc Pipeline Approaches
+
+skinparam shadowing false
+skinparam linetype ortho
+skinparam rectangle {
+  roundCorner 10
+}
+
+rectangle "Ad-Hoc Pipeline" as Adhoc {
+  rectangle "Rushed Design" as RD
+  rectangle "No Clear Objectives" as NCO
+  rectangle "Undefined Data Governance" as UDG
+  rectangle "Reactive Changes" as RC
+}
+
+rectangle "Well-Planned Pipeline" as Planned {
+  rectangle "Structured Goals\n& Objectives" as SGO
+  rectangle "Stakeholder Alignment" as SA
+  rectangle "Documented Data\nGovernance" as DDG
+  rectangle "Proactive Evolution" as PE
+}
+
+RD -down-> NCO
+NCO -down-> UDG
+UDG -down-> RC
+
+SGO -down-> SA
+SA -down-> DDG
+DDG -down-> PE
+
+Adhoc -[dotted]-> Planned : "Clear Contrast"
+
+@enduml

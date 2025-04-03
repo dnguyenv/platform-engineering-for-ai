@@ -1,0 +1,56 @@
+@startuml
+title Layered Approach to Tool Selection
+
+skinparam shadowing false
+skinparam linetype ortho
+
+rectangle "Ingestion Layer" as Ingest {
+  rectangle "Streaming Tools\n(Kafka, Pulsar,\nKinesis, etc)" as Streaming
+  rectangle "Batch Tools\n(Sqoop, AWS Glue,\netc.)" as BatchIngest
+}
+
+rectangle "Processing Layer" as Process {
+  rectangle "Batch Engine\n(Spark, Hive, etc)" as BatchProcess
+  rectangle "Streaming Engine\n(Flink, Spark\nStructured Streaming, etc)" as StreamProcess
+  rectangle "Orchestration\n(Airflow, Argo,\nDataflow, etc)" as Orchestration
+}
+
+rectangle "Storage Layer" as Storage {
+  rectangle "Data Lake / Lakehouse\n(S3, HDFS, Delta Lake,\nIceberg, etc)" as DataLake
+  rectangle "Data Warehouse\n(Redshift, BigQuery,\nSnowflake, etc)" as DataWarehouse
+}
+
+rectangle "Serving / Output Layer" as Serve {
+  rectangle "Analytics / BI\n(Tableau, Looker, etc)" as Analytics
+  rectangle "Model Serving\n(MLOps Tools,\nModel Registry, etc)" as ModelServing
+  rectangle "API / Batch Exports\n(Kafka Connect,\nServerless, etc)" as APIExports
+}
+
+cloud "Security & Compliance\n(Encryption, RBAC, Audits, etc)" as SC
+cloud "Governance & Metadata\n(Data Catalog, Lineage, etc)" as GM
+cloud "Monitoring & Logging\n(Prometheus, ELK,\nGrafana, etc)" as ML
+
+Streaming -down-> BatchProcess
+BatchIngest -down-> BatchProcess
+BatchProcess -down-> DataLake
+StreamProcess -down-> DataLake
+Orchestration -down-> DataLake
+DataLake -down-> DataWarehouse
+DataWarehouse -down-> Analytics
+DataWarehouse -down-> ModelServing
+DataWarehouse -down-> APIExports
+
+SC -[dotted]-> Ingest
+SC -[dotted]-> Process
+SC -[dotted]-> Storage
+SC -[dotted]-> Serve
+
+GM -[dotted]-> Process
+GM -[dotted]-> Storage
+
+ML -[dotted]-> Ingest
+ML -[dotted]-> Process
+ML -[dotted]-> Storage
+ML -[dotted]-> Serve
+
+@enduml

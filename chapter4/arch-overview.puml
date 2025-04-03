@@ -1,0 +1,38 @@
+@startuml
+title StreamCommerce: High-Level Streaming Architecture
+
+skinparam shadowing false
+
+actor "User" as User
+actor "Partner System" as Partner
+
+rectangle "Front-End / API\n(Events, JSON)" as FE
+
+cloud "Kafka Cluster" as KAFKA {
+  rectangle "user_events"
+  rectangle "transactions"
+}
+
+rectangle "Flink Processors" as FLINK {
+  rectangle "Data Enrichment\n(Join user profile)"
+  rectangle "Fraud Detection\n(ML-based Scoring)"
+  rectangle "Aggregations\n(Top products,\nsliding windows)"
+}
+
+rectangle "Real-time Serving\n(Elasticsearch,\nRedis, etc.)" as Serve
+rectangle "Data Lake / \nWarehouse\n(S3, Delta, etc.)" as Lake
+rectangle "Ops & Marketing\nDashboards" as Dash
+rectangle "Legacy ETL\n(Batch Spark,\nHive queries)" as Batch
+
+User --> FE : Interactions\n(Clicks, Purchases)
+Partner -> FE : Merchant Updates,\nInventory feeds
+FE --> user_events : Publish JSON
+FE --> transactions : If purchase
+
+user_events --> FLINK
+transactions --> FLINK
+FLINK --> Serve : Aggregated metrics,\nrealtime indexes
+FLINK --> Lake : Raw + Enriched Data
+Lake --> Batch : Nightly or scheduled\ntransformations
+Serve --> Dash : Dashboard queries
+@enduml

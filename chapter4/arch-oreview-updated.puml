@@ -1,0 +1,29 @@
+@startuml
+title StreamCommerce: High-Level Architecture
+
+skinparam shadowing false
+
+actor "End Users" as End
+actor "Partner Systems" as Partner
+
+rectangle "Front-End / API\n(Events in JSON)" as FE
+cloud "Kafka Cluster" as KAFKA
+rectangle "Flink Jobs\n(Real-time Processor)" as FLINK {
+  rectangle "Session Windowing"
+  rectangle "Fraud Detection"
+}
+
+rectangle "Near-real-time\nStore (Elasticsearch,\nRedis, etc.)" as NRT
+rectangle "Data Lake\n(S3 or HDFS-based)" as DL
+rectangle "Batch ML & ETL\n(Spark, Hive)" as ML_ETL
+rectangle "Operational\nDashboards" as OPS
+
+End --> FE : Interactions,\nclicks, purchases
+Partner --> FE : Merchant updates
+FE --> KAFKA : Publish events
+KAFKA --> FLINK : Subscribe & transform
+FLINK --> NRT : Aggregated results\nfor dashboards
+FLINK --> DL : Raw/enriched\nfor batch
+NRT --> OPS : Real-time analytics
+DL --> ML_ETL : Nightly/weekly jobs
+@enduml

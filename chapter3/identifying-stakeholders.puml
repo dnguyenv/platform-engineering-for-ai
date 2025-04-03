@@ -1,0 +1,20 @@
+@startuml
+title Stakeholder Alignment in Pipeline Planning
+
+skinparam shadowing false
+
+rectangle "Data Engineering\nTeam" as DE
+rectangle "Data Scientists\n& Analysts" as DS
+rectangle "DataOps/\nPlatform Engineers" as DevOps
+rectangle "Compliance/\nSecurity" as Comp
+rectangle "Business/Domain\nOwners" as Biz
+
+cloud "Unified Pipeline Requirements" as Req
+
+DE --> Req: Ingestion, ETL,\nPerformance
+DS --> Req: Data Freshness,\nFeature Access
+DevOps --> Req: Infra Scalability,\nMonitoring
+Comp --> Req: Access Control,\nAudit Trails
+Biz --> Req: ROI, Timeliness,\nMetrics
+
+@enduml

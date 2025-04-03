@@ -1,0 +1,20 @@
+@startuml
+title Monitoring and Observability Flow
+
+skinparam shadowing false
+
+rectangle "Kafka Brokers" as KAFKA
+rectangle "Flink\nExecution Nodes" as FLINK
+rectangle "Elasticsearch" as ELS
+rectangle "Prometheus" as PROM
+rectangle "Grafana\nDashboards" as GRAF
+rectangle "Alertmanager" as ALERT
+rectangle "Distributed Tracing\n(e.g., Jaeger)" as TRACE
+
+KAFKA --> PROM : Kafka metrics
+FLINK --> PROM : Flink job metrics
+ELS --> PROM : Node metrics
+PROM --> GRAF : Visual dashboards
+PROM --> ALERT : Alerts (CPU, lag, error)
+FLINK --> TRACE : Traces (job steps,\noperator latencies)
+@enduml

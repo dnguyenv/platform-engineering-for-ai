@@ -1,0 +1,17 @@
+@startuml
+title Assessing Data Volume and Velocity
+
+start
+:Gather Data\nVolume Stats (Daily,\nPeak, Growth);
+:Gather Data\nVelocity Info (Real-time,\nBatch, Bursts);
+if (High velocity?) then (yes)
+  :Real-time Or Streaming?\n(Consider Kafka, Flink,\netc.);
+else (no)
+  :Batch Or Micro-batch?\n(Consider Scheduled,\nNightly, etc.);
+endif
+
+:Estimate Growth\nRates & Peak Loads;
+:Plan Resource Capacity\n(Scale/Autoscale,\nCloud vs. On-Prem);
+stop
+
+@enduml

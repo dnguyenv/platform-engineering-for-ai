@@ -1,0 +1,36 @@
+@startuml
+title Conceptual Data Lineage in an AI Platform
+
+skinparam shadowing false
+
+' Entities
+rectangle "Data Source A" as sourceA
+rectangle "Data Source B" as sourceB
+rectangle "Raw Data Lake, Lakehouse" as rawLake
+rectangle "Feature Store" as fs
+rectangle "Model Training Pipeline" as trainPipe
+rectangle "Trained Model\nVersion 1.0" as modelV1
+rectangle "Trained Model\nVersion 2.0" as modelV2
+rectangle "Deployment\nEndpoint" as deploy
+
+' Connections
+sourceA --> rawLake: Ingestion
+sourceB --> rawLake: Ingestion
+rawLake --> fs: Transformation and Feature Engineering
+fs --> trainPipe: Build Training Dataset
+
+trainPipe --> modelV1: Register Model
+trainPipe --> modelV2: Register Model
+modelV1 --> deploy: Deploy
+modelV2 --> deploy: Deploy
+
+note as lineageNote
+Lineage tracking:
+- Ingestion timestamps
+- Transform scripts
+- Feature definitions
+- Model versions
+- Hyperparameters
+end note
+
+@enduml

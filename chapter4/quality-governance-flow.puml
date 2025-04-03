@@ -1,0 +1,16 @@
+@startuml
+title Data Quality and Governance Flow
+
+skinparam shadowing false
+
+rectangle "Flink Validation\n& Enrichment" as VALIDATE
+rectangle "Suspicious?\nAnomaly Score" as ANOMALY
+rectangle "Quarantine Topic" as QUAR
+rectangle "Compliant Data" as GOOD
+cloud "Metadata / Lineage\n(Store transformations,\nschema versions)" as META
+
+VALIDATE -down-> ANOMALY : Evaluate \nrules, schema checks
+ANOMALY -right-> QUAR : If out-of-range\nor suspicious
+ANOMALY -down-> GOOD : If valid
+VALIDATE --> META : Log transformations,\nversions
+@enduml

@@ -1,0 +1,17 @@
+@startuml
+title Streaming Pipeline Within the Platform Ecosystem
+
+skinparam shadowing false
+
+rectangle "CI/CD\n(DevOps Pipelines)" as CICD
+rectangle "Security & IAM\n(RBAC, Encryption)" as SEC
+rectangle "MLOps\n(Model Registry,\nRetraining)" as MLOPS
+
+cloud "Real-time Pipeline\n(Kafka, Flink,\nES, Data Lake)" as PIPE
+rectangle "Legacy Batch\n(ETL, Cron)" as LB
+
+CICD --> PIPE : Deploy,\nversioning
+SEC --> PIPE : Access checks,\nencryption
+PIPE --> MLOPS : Provide\nfresh data for models
+LB --> PIPE : Hybrid synergy,\nshared data lake
+@enduml

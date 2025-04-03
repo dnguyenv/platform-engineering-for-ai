@@ -1,0 +1,41 @@
+@startuml
+title Detailed Data Flow: StreamCommerce Pipeline
+
+skinparam shadowing false
+skinparam linetype ortho
+skinparam rectangle {
+  roundCorner 8
+}
+
+' Actors and initial components
+actor "User\n(Web/Mobile)" as User
+rectangle "Frontend" as FE
+cloud "Kafka Topics\n(Partitions / Replicas)" as Kafka
+
+' Flink job components clearly grouped
+rectangle "Flink Jobs" as Flink {
+  rectangle "Validation" as Val
+  rectangle "Enrichment" as Enrich
+  rectangle "Aggregation" as Agg
+}
+
+' Downstream components
+rectangle "Anomaly Service\n(Fraud Detection)" as Anomaly
+rectangle "Real-time Store\n(Elasticsearch / Redis)" as RTStore
+rectangle "Data Lake / Warehouse" as DataLake
+rectangle "Batch Jobs\n(Spark / Hive)" as Batch
+rectangle "Dashboards\n(Ops / Marketing)" as Dashboards
+
+' Data flow connections
+User --> FE : Click / Buy
+FE --> Kafka : Publish JSON events
+Kafka --> Flink : Stream Events
+
+Flink --> RTStore : Real-time Metrics
+Flink --> DataLake : Raw & Enriched Data
+Flink --> Anomaly : Fraud Checks
+
+RTStore --> Dashboards : Low-latency Queries
+DataLake --> Batch : Nightly Transformations
+
+@enduml

@@ -1,0 +1,16 @@
+@startuml
+title Unified Data Ecosystem
+
+skinparam shadowing false
+
+rectangle "Real-time Pipeline\n(Kafka, Flink)" as RTP
+rectangle "Immediate Feeds\n(Dashboards,\nAnomaly Alerts)" as IFS
+rectangle "Data Lake\n(S3, Delta, etc.)" as DL
+rectangle "Batch Processes\n(Spark/Hive)" as BP
+rectangle "Enriched Outputs\n(Reports, ML Models)" as OUT
+
+RTP --> IFS : Sub-second data
+RTP --> DL : Continuous ingest
+DL --> BP : Nightly or scheduled
+BP --> OUT : Aggregated insights
+@enduml

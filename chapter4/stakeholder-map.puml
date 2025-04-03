@@ -1,0 +1,19 @@
+@startuml
+title StreamCommerce Stakeholder Map
+
+skinparam shadowing false
+
+actor "Marketing Team\n(Real-time Campaigns)" as M
+actor "Operations Team\n(Live Dashboards)" as O
+actor "Security/Fraud Team\n(Immediate Alerts)" as S
+actor "Data Science\n(Recommender Models)" as D
+actor "Finance/Compliance\n(Nightly Reconciliations)" as F
+
+rectangle "Streaming Pipeline" as Pipeline
+
+M --> Pipeline : Sub-minute\nuser behavior analytics
+O --> Pipeline : Inventory updates\nops metrics
+S --> Pipeline : Fraud detection,\nanomaly triggers
+D --> Pipeline : Continuous data\nfor ML features
+F --> Pipeline : Bulk data for\nend-of-day financials
+@enduml

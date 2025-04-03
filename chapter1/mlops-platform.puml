@@ -1,0 +1,28 @@
+@startuml
+skinparam shadowing false
+skinparam ArrowColor #000000
+skinparam HorizontalAlignment center
+skinparam sequenceMessageAlign center
+
+
+actor DataPractisioner as DP
+actor MLOps as DO
+actor Business as BUS
+
+rectangle "AI Platform" {
+  rectangle "Data Ingestion\n & Preprocessing" as Ingestion
+  rectangle "Model Training\n & Experimentation" as Training
+  rectangle "Model Registry\n & Versioning" as Registry
+  rectangle "Deployment\n & Monitoring" as Deployment
+}
+
+DP --> Ingestion : "Upload new dataset\nDefine transformations"
+DP --> Training : "Train & tune models\nPush model code"
+Training --> Registry : "Register new model\nStore metadata"
+Registry --> Deployment : "Deploy or update model\nin production"
+
+Deployment --> DP : "Feedback on performance"
+Deployment --> DO : "CI/CD pipeline management"
+Deployment --> BUS : "Business metrics\n& dashboards"
+
+@enduml
