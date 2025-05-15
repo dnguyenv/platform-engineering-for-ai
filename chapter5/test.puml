@@ -1,0 +1,10 @@
+
+@startuml
+node "Kubernetes Cluster" {
+    node "Namespace" {
+        node "Pod" {
+            [Container]
+        }
+    }
+}
+@enduml

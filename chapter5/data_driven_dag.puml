@@ -1,0 +1,29 @@
+@startuml
+' Organized ML Pipeline for book layout
+skinparam shadowing false
+skinparam rectangleBorderColor #3A7AC7
+skinparam rectangleBackgroundColor #EEF4FF
+'left to right direction
+
+package "Data Preparation" {
+  rectangle "Ingestion\nTask" as ING
+  rectangle "Feature Build\nTask" as FE
+}
+
+package "Modeling" {
+  rectangle "Training\nTask" as TR
+  rectangle "Validation\nTask" as VAL
+}
+
+package "Deployment" {
+  rectangle "Registry Update\nTask" as REG
+  rectangle "Deployment\nTask" as DEP
+}
+
+' Workflow arrows
+ING -down-> FE : raw snapshot ready
+FE  -right-> TR : feature view ready
+TR  --> VAL : model artifact + metrics
+VAL -right-> REG: validation_pass event
+REG -down-> DEP: model promoted event
+@enduml

@@ -1,0 +1,25 @@
+@startuml
+skinparam shadowing false
+skinparam rectangleBorderColor #4A7AC7
+skinparam rectangleBackgroundColor #F2F6FF
+'left to right direction
+
+actor   "End User" as USER
+queue   "API Gateway" as GATE
+rectangle "Inference Pod\n(model 2.2.1)" as INF
+rectangle "Feature Store\nOnline API" as FS
+database  "Logs & Traces\n(central store)" as LOGS
+database  "Time-series DB\n(metrics)" as MET
+rectangle "Drift Detector\n(batch job)" as DRIFT
+component "Alertmanager" as AM
+
+USER --> GATE
+GATE --> INF : request + trace-ID
+INF --> FS    : feature fetch (trace-ID)
+INF --> USER : prediction
+INF --> LOGS : structured log (trace-ID, model-ID, features, prediction)
+INF --> MET   : latency, counters, model metrics
+FS  -down-> MET   : cache hit ratio, latency
+DRIFT --> MET : data drift metrics (e.g., PSI)
+MET --> AM    : SLO breach triggers alerts
+@enduml

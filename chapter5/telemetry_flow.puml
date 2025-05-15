@@ -1,0 +1,60 @@
+@startuml
+' Observability integration in ML pipeline
+skinparam shadowing false
+skinparam rectangleBackgroundColor #F5F8FF
+skinparam rectangleBorderColor #4A89C7
+
+' Global horizontal layout for pipeline
+left to right direction
+
+actor Engineer
+
+package "ML Pipeline" {
+  rectangle "Ingestion"        as ING
+  rectangle "Feature Builder"  as FE
+  rectangle "Trainer"          as TR
+  rectangle "Validator"        as VAL
+  rectangle "Serving\n(API)"   as SERV
+}
+
+' Temporarily switch to vertical layout for Observability
+top to bottom direction
+
+package "Observability" as OBS {
+  cloud    "Logs & Traces\nCollector"  as LOGS
+  database "Metrics Store"            as MET
+  rectangle "Alerting Rules"          as ALERT
+  rectangle "Notification\nService"   as NOTIF
+}
+
+note right of OBS
+Dual-pipeline telemetry:
+• Logs & traces for deep forensic insight  
+• Time-series metrics for real-time monitoring  
+Alerts fire on throughput, error-rate, latency thresholds
+end note
+
+' Switch back to horizontal for the flows
+left to right direction
+
+'–– Telemetry streams ––'
+ING  -[dashed]-> LOGS 
+FE   -[dashed]-> LOGS
+TR   -[dashed]-> LOGS
+VAL  -[dashed]-> LOGS
+SERV -[dashed]-> LOGS: log + span
+
+ING  --> MET : counters\nhistograms
+FE   --> MET
+TR   --> MET
+VAL  --> MET
+SERV --> MET
+
+'–– Alerting pipeline ––'
+MET   --> ALERT : evaluate metrics
+ALERT --> NOTIF : send notification
+
+'–– Incident response ––'
+Engineer --> LOGS : inspect traces
+Engineer --> MET  : review metrics
+@enduml

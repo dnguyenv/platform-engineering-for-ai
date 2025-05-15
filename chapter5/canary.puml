@@ -1,0 +1,34 @@
+@startuml
+' Blue/Green and Canary deployment strategies
+skinparam shadowing false
+skinparam rectangleBackgroundColor #F0F4FF
+skinparam rectangleBorderColor #4A75C8
+skinparam noteBackgroundColor #FFFFFF
+skinparam noteBorderColor #4A75C8
+
+left to right direction
+
+package "Canary Deployment" {
+  node "Load Balancer" as LB_CAN
+  folder "Blue Cluster" as BLUE_CAN {
+    [Stable Model v1]
+  }
+  folder "Green Cluster" as GREEN_CAN {
+    [Candidate Model v2]
+  }
+}
+
+' Initial traffic split
+LB_CAN --> BLUE_CAN : 95% traffic
+LB_CAN --> GREEN_CAN : 5% traffic
+
+note right of GREEN_CAN
+  Monitor latency, errors,
+  KPIs; adjust % based
+  on error budget
+end note
+
+' Automated rollback gate
+GREEN_CAN ..> LB_CAN : rollback trigger
+
+@enduml

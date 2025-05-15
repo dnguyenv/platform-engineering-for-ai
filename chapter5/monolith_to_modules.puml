@@ -1,0 +1,23 @@
+@startuml
+title From One-File Notebook to Modular Pipeline
+skinparam shadowing false
+skinparam rectangleBackgroundColor #FDECEC
+skinparam rectangleBorderColor   #C15454
+rectangle "All-in-One Notebook\n Data Prep → Train → Export " as MONO
+
+MONO -[#C15454,dashed]-> "Pain: \n• Hidden couplings\n• Over-provisioning\n• Weak lineage\n• Single point of failure"
+
+skinparam rectangleBackgroundColor #EEF5FF
+skinparam rectangleBorderColor   #3A7AC7
+package "Modular ML Pipeline" {
+  rectangle "Ingest" as ING
+  rectangle "Feature\nBuilder" as FE
+  rectangle "Trainer" as TR
+  rectangle "Validator" as VAL
+  rectangle "Deployer" as DEP
+  ING -down-> FE
+  FE  -down-> TR
+  TR  -down-> VAL
+  VAL -down-> DEP
+}
+@enduml

@@ -1,0 +1,28 @@
+@startuml
+' Event-driven promotion flow for model lifecycle
+skinparam shadowing false
+skinparam rectangleBackgroundColor #EEF4FF
+skinparam rectangleBorderColor #4A85C7
+left to right direction
+
+queue "Registry Event\n(model.validated)" as EVENT
+
+package "Promotion Workflow" {
+  node "Orchestrator\n(K8s / Airflow)" as ORCH
+  rectangle "Pull Model + Preprocessing\n(binary + graph)" as PULL
+  rectangle "Build Container Image\n(tag: 2.2.1-staging)" as BUILD
+  rectangle "Deploy to Shadow Endpoint" as SHADOW
+  rectangle "Collect Online Metrics\n(latency, error rate, KPIs)" as METRICS
+  rectangle "Evaluate vs Baseline\n(confidence bounds)" as EVAL
+  rectangle "Emit model.promote or model.reject" as EMIT
+}
+
+EVENT --> ORCH : receive model.validated
+ORCH --> PULL  : pull artifacts
+PULL -down-> BUILD : build image
+BUILD -down-> SHADOW : deploy image
+SHADOW -left-> METRICS : mirror traffic
+METRICS -left-> EVAL : compare metrics
+EVAL -left-> EMIT : decision
+EMIT -left-> EVENT : emit promotion/rejection
+@enduml

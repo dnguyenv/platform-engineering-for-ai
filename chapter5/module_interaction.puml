@@ -1,0 +1,30 @@
+@startuml
+title Modular ML Pipeline: Artifact-Based Interaction
+
+skinparam rectangleBackgroundColor #F6F9FF
+skinparam rectangleBorderColor     #4A8DDD
+skinparam databaseBackgroundColor #E0EFFF  // Slightly different color for stores
+skinparam databaseBorderColor    #4A8DDD
+skinparam componentBackgroundColor #FFF6F0 // Different color for deployer/service
+skinparam componentBorderColor    #FFA042
+skinparam shadowing false
+skinparam roundcorner 5
+
+top to bottom direction
+
+rectangle "Ingestion\n(produces: validated_data_v1)"        as ING   <<Pipeline Step>>
+rectangle "Feature Builder\n(produces: feature_view_v37)"     as FE    <<Pipeline Step>>
+rectangle "Trainer\n(produces: model_candidate_42 + metrics)" as TR    <<Pipeline Step>>
+rectangle "Validator\n(produces: validation_report)"         as VAL   <<Pipeline Step>>
+database  "Model Registry\n(stores models & metadata)"        as REG   <<Metadata Store>>
+component "Deployer\n(produces: container_image:v1.2.3)"      as DEP   <<CI/CD Process>>
+node      "Prediction Service\n(serves model:42)"             as SRV   <<Live Service>>
+
+' Connect stages showing artifact handoffs and triggers
+ING --> FE  : consumes validated_data_v1
+FE  --> TR  : consumes feature_view_v37
+TR  --> VAL : consumes model_candidate_42 + metrics
+VAL --> REG : pushes validated model:42 upon success
+REG -->> DEP : triggers deployment for promoted model:42
+DEP -> SRV  : deploys container_image:v1.2.3
+@enduml

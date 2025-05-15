@@ -1,0 +1,32 @@
+@startuml
+' Blue/Green and Canary deployment strategies
+skinparam shadowing false
+skinparam rectangleBackgroundColor #F0F4FF
+skinparam rectangleBorderColor #4A75C8
+skinparam noteBackgroundColor #FFFFFF
+skinparam noteBorderColor #4A75C8
+
+left to right direction
+
+package "Blue/Green Deployment" {
+  node "Load Balancer" as LB_BG
+  folder "Blue Cluster" as BLUE_BG {
+    [Golden Model v1]
+  }
+  folder "Green Cluster" as GREEN_BG {
+    [Candidate Model v2]
+  }
+}
+
+LB_BG --> BLUE_BG : 100% traffic
+note right of GREEN_BG
+  Health checks, smoke tests,
+  canary simulations
+  pass thresholds
+end note
+
+GREEN_BG --> LB_BG : flip traffic
+LB_BG ..> BLUE_BG : rollback
+
+
+@enduml

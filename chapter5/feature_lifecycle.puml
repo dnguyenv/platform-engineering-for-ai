@@ -1,0 +1,19 @@
+@startuml
+left to right direction
+skinparam shadowing false
+skinparam rectangleBackgroundColor #EFF6FF
+skinparam rectangleBorderColor #4A7AC7
+
+rectangle "Raw Tables / Streams" as RAW
+rectangle "Feature Store\n(Declaration + Metadata)" as FS
+rectangle "Offline Materialisation\n(parquet / delta)" as OFF
+rectangle "Online Serving\n(key-value cache)" as ON
+rectangle "Training Job" as TRAIN
+rectangle "Real-Time Inference" as SERVE
+
+RAW --> FS : read sources
+FS  --> OFF : batch build
+FS  --> ON  : realtime materialise
+OFF --> TRAIN
+ON  --> SERVE
+@enduml

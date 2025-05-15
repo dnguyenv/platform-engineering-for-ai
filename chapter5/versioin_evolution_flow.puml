@@ -1,0 +1,26 @@
+@startuml
+' Feature view versions evolution diagram
+skinparam shadowing false
+skinparam rectangleBackgroundColor #F8F9FF
+skinparam rectangleBorderColor #4A85C7
+left to right direction
+
+package "Feature Version Evolution" {
+  rectangle "v1\ncols: user_id, spend" as V1
+  rectangle "v2\ncols: user_id, spend\n+ optional col last_login" as V2
+  rectangle "v3\ncols: uid, spend\n+ optional col last_login" as V3
+}
+
+V1 --> V2 : compatible (minor)
+V2 -[#C15454,dashed]-> V3 : breaking (major)
+
+note right of V2
+  Trainer reads v1 or v2
+  without code change.
+end note
+
+note right of V3
+  Requires trainer upgrade
+  and registry opt-in flag.
+end note
+@enduml

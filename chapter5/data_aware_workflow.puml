@@ -1,0 +1,29 @@
+@startuml
+' Well-organized sensor-to-registry ML pipeline for book layout
+skinparam shadowing false
+skinparam rectangleBackgroundColor #F4F7FF
+skinparam rectangleBorderColor #4B7BC5
+skinparam noteBorderColor #4B7BC5
+skinparam noteBackgroundColor #FFFFFF
+left to right direction
+
+package "Event Source" {
+  rectangle "⏰ Sensor\n(wait for raw/2024-05-01.parquet)" as SENSOR
+}
+
+package "Pipeline Stages" {
+  rectangle "Ingest\nContainer"     as ING
+  rectangle "Feature View\nBuilder" as FE
+  rectangle "Trainer\n(GPU)"        as TR
+  rectangle "Validator"             as VAL
+  rectangle "Registry\n→ prod-candidate" as REG
+}
+
+' Workflow connections
+SENSOR --> ING : file-arrived event
+ING    -down-> FE  : raw snapshot hash
+FE     -left-> TR  : feature_view v12
+TR     -right-> VAL : model v7 + metrics
+VAL    -down-> REG : promotion event
+
+@enduml

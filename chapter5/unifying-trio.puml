@@ -1,0 +1,18 @@
+@startuml
+skinparam shadowing false
+skinparam rectangleBackgroundColor #F8FAFF
+skinparam rectangleBorderColor #4A7DC6
+left to right direction
+
+rectangle "Git Tag\ncommit: a1b2c3" as CODE
+rectangle "Data Snapshot\ntransactions@2024-04-30" as DATA
+rectangle "Model Artifact\nsha256:9f8e…" as MODEL
+
+database "Experiment Tracker" as EXP
+database "Model Registry" as REG
+
+CODE --> EXP : tag & lockfile
+DATA --> EXP : snapshot ref
+MODEL --> EXP : run artifact
+MODEL --> REG : register
+@enduml

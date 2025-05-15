@@ -1,0 +1,27 @@
+@startuml
+title A Typical End‑to‑End ML Pipeline Flow
+
+skinparam shadowing false
+skinparam rectangle {
+  BackgroundColor #F5F5F5
+  BorderColor #888888
+}
+
+rectangle "Data Sources" as DS
+rectangle "Ingestion / Raw\nValidation" as ING
+rectangle "Feature Engineering\n& Feature Store" as FE
+rectangle "Training &\nHyperparameter Search" as TR
+rectangle "Validation & Bias\nTesting" as VAL
+rectangle "Model Registry" as REG
+rectangle "Deployment\n(Real‑Time / Batch / Edge)" as DEP
+rectangle "Monitoring & Drift\nDetection" as MON
+
+DS --> ING
+ING --> FE
+FE --> TR
+TR --> VAL
+VAL --> REG
+REG --> DEP
+DEP --> MON
+MON --> ING : New labels / drift\ntriggers retraining
+@enduml

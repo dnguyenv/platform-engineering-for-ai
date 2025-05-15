@@ -1,0 +1,24 @@
+@startuml
+skinparam rectangleBorderColor #4A7AC7
+skinparam rectangleBackgroundColor #EFF5FF
+skinparam shadowing false
+
+database "Raw POS & Promo\n(Delta Lake)"      as RAW <<Data Lake>>
+rectangle "Ingestion Pipeline\n(PySpark on K8s)" as ING <<Pipeline>>
+database  "Feature Store\n(Online/Offline APIs)" as FS  <<Data Store>>
+frame "Training Orchestrator (e.g., Kubeflow)" {
+  rectangle "Training & HPO\n(Distributed)" as HP <<Compute>>
+}
+database  "Model Registry\n(MLflow/Vertex)"      as REG <<Metadata Store>>
+node      "Online Forecast API\n(KServe/Seldon)"  as API <<Service>>
+database  "Observability Store\n(Logs, Metrics, Traces)" as OBS <<Monitoring>>
+
+RAW --> ING : reads versioned snapshots
+ING --> FS  : computes & writes feature view v27
+FS  --> HP  : provides feature view v27 (training)
+FS --> API  : provides features (inference)
+HP  --> REG : registers model candidate 3.4.1 (staging)
+REG --> API : triggers deployment (e.g., canary) via CD
+API --> OBS : sends structured logs & metrics (trace-ID)
+OBS --> REG : can trigger promotion / rollback hooks (via Alertmanager)
+@enduml

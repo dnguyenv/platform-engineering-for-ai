@@ -1,0 +1,34 @@
+@startuml
+skinparam shadowing false
+skinparam rectangleBorderColor #4a7cc6
+skinparam rectangleBackgroundColor #eef4ff
+left to right direction
+
+actor "Developer" as Dev
+
+package "Development" {
+  rectangle "Source Code\n+ Dockerfile" as SRC
+  rectangle "CI Build Job" as CI
+  database "Image Registry" as REG
+}
+
+package "Orchestration" {
+  node "Orchestrator\n(K8s / Airflow)" as ORCH
+}
+
+package "Production" {
+  node "Prod Cluster" as PROD {
+    folder "Namespace" as NS {
+      node "Pod" as POD {
+        [Container] as CON
+      }
+    }
+  }
+}
+
+Dev --> SRC : commit\nfeature-builder/
+SRC --> CI  : webhook
+CI  --> REG : push\nsha256:4f3c9b…
+ORCH --> REG : pull\nexact digest
+ORCH --> POD : schedule pod\nusing same image
+@enduml
