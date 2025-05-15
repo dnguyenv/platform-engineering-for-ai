@@ -1,0 +1,35 @@
+@startuml
+title Example lineage graph, from raw data to a single prediction
+
+skinparam shadowing false
+skinparam rectangleBackgroundColor #F5F8FF
+skinparam rectangleBorderColor #4A7AC7
+skinparam databaseBackgroundColor #E0EFFF
+skinparam databaseBorderColor #4A7AC7
+skinparam nodeBackgroundColor #FFF0E0
+skinparam nodeBorderColor #FFA042
+skinparam frameBackgroundColor # व्हाइट 
+skinparam frameBorderColor #Gray
+
+database "Raw Data Source\n(e.g., POS_CSV)\nID: ds_sales_20250513\nSHA256: 9ab1..." as RAW
+rectangle "Ingestion Process\n(Version: v3.1)\n(Input Contract: schema_v5)" as ING
+database "Feature Store\n(Feature View: \nuser_spend_fv_v27)\n(Hash: abc27...)" as FEAT
+
+frame "Training & Validation Run\n(Experiment ID: run_7f3a)" {
+  rectangle "Training Container\n(Image Digest: e4f8...)" as IMG
+  rectangle "Model Artifact\n(e.g., model.pkl)\n(SHA256: bb12...)" as MODEL_ART
+  rectangle "Validation Report\n(Report ID: val_rep_001)" as VAL_REP
+}
+
+database "Model Registry\n(Registered Model: \n'churn_predictor_v2.2.1')" as REG
+node "Inference API Call\n(Prediction ID: pred_abc123)" as SERVE
+
+RAW -right-> ING : (consumed_by)
+ING --> FEAT : (produces_features_for)
+FEAT -->> IMG : (training_run_consumes)
+IMG -->> MODEL_ART : (training_run_produces)
+MODEL_ART -->> VAL_REP : (validated_by)
+VAL_REP -left->> REG : (model_registered_if_pass)
+REG -->> SERVE : (inference_loads_model)
+
+@enduml

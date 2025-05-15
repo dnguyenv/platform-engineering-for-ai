@@ -1,0 +1,21 @@
+@startuml
+title Governance risk points in an ML pipeline
+
+skinparam shadowing false
+skinparam rectangleBorderColor #4A7AC7
+skinparam rectangleBackgroundColor #EFF5FF
+
+rectangle "Raw Data\nSources" as RAW
+rectangle "Feature Engineering\n& Store" as FEAT
+rectangle "Model\nTraining" as TRAIN
+rectangle "Registry & CI/CD\n(Validation/Promotion)" as REG_CICD
+rectangle "Model\nServing" as SERVE
+rectangle "Production\nMonitoring" as MON
+
+RAW      -[#D32F2F,bold]-> FEAT     : Privacy & Compliance Risk\n(e.g., PII handling, consent)
+FEAT     -[#F57C00,bold]-> TRAIN    : Bias Amplification Risk\n(e.g., skewed features, unrepresentative data)
+TRAIN    -[#FBC02D,bold]-> REG_CICD : Lineage & Reproducibility Risk\n(e.g., untracked experiments, opaque models)
+REG_CICD -[#FBC02D,bold]-> SERVE    : Unsafe Promotion Risk\n(e.g., inadequately validated model)
+SERVE    -[#D32F2F,bold]-> MON      : Operational & Performance Drift Risk\n(e.g., accuracy decay, latency spikes)
+MON      -[#F57C00,bold]-> REG_CICD : Ineffective Response Risk\n(e.g., delayed rollback, missed drift signals)
+@enduml

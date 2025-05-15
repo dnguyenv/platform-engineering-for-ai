@@ -1,0 +1,50 @@
+@startuml
+title Conceptual layered security architecture for AI platforms
+
+skinparam shadowing false
+skinparam rectangleBackgroundColor #F4F8FF
+skinparam rectangleBorderColor #4A7AC7
+skinparam cloudBackgroundColor #E0EFFF    // For external/managed services like Vault/SIEM
+skinparam nodeBackgroundColor #FFF0E0      // For compute/runtime elements
+skinparam packageBorderColor #CCCCCC
+skinparam packageBackgroundColor #FAFAFA
+
+actor "External User / Client System" as EXT_USER
+
+package "Perimeter & Edge Security" {
+  rectangle "1. API Gateway & WAF\n(TLS Termination, DDoS Protection,\nInput Validation, Rate Limiting)" as PERIMETER_GATEWAY
+}
+
+package "Network & Service-Level Security (Internal)" {
+  rectangle "2. Service Mesh\n(mTLS, Workload Identity, \nFine-grained AuthZ Policies)" as SERVICE_MESH
+  rectangle "3. Network Segmentation\n(Kubernetes NetworkPolicies \n- East/West Traffic Control)" as NETWORK_POLICY
+}
+
+package "Workload & Application Security" {
+  rectangle "4. Runtime Security\n(Non-root execution, Read-only FS,\nSeccomp, AppArmor, Image Scanning)" as RUNTIME_SECURITY
+  cloud "5. Secrets Management\n(Centralized Vault/KMS, Secure Injection,\nKey Rotation, Envelope Encryption)" as SECRETS_MGMT
+  rectangle "6. Model-Specific Defenses\n(Input Sanitization, OOD Detection,\nAdversarial Robustness Techniques)" as MODEL_DEFENSES
+}
+
+package "Platform-Wide Security Operations" {
+  cloud "7. Continuous Threat Detection & SIEM\n(Log Aggregation, Correlation, Alerting, Incident Response)" as SIEM
+}
+
+EXT_USER --> PERIMETER_GATEWAY
+PERIMETER_GATEWAY --> SERVICE_MESH : (Authorized & Filtered Traffic)
+SERVICE_MESH --> NETWORK_POLICY : (Network Policies\n Enforced by CNI)
+NETWORK_POLICY --> RUNTIME_SECURITY : (Applies to individual\n Pods/Containers)
+
+RUNTIME_SECURITY --> SECRETS_MGMT : (Workloads securely \nfetch secrets)
+SERVICE_MESH --> MODEL_DEFENSES : (Requests to \nModel Inference Endpoints)
+MODEL_DEFENSES --> SECRETS_MGMT : (e.g., for model \ndecryption keys if applicable)
+
+
+PERIMETER_GATEWAY --> SIEM : (Edge Logs, WAF Alerts)
+SERVICE_MESH --> SIEM : (Service Comm. \nLogs, AuthZ Events)
+NETWORK_POLICY --> SIEM : (Network Flow Logs, \nPolicy Denial Events)
+RUNTIME_SECURITY --> SIEM : (Container/Host \nSecurity Events, Audit Logs)
+SECRETS_MGMT --> SIEM : (Secret Access Audit Logs)
+MODEL_DEFENSES --> SIEM : (Model Anomaly Alerts, \nInput Validation Logs)
+
+@enduml

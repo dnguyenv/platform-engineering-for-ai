@@ -1,0 +1,35 @@
+@startuml
+title Conceptual Flow of Attribute-Based Access Control
+
+skinparam shadowing false
+skinparam rectangleBorderColor #4477C5
+skinparam rectangleBackgroundColor #EFF3FF
+top to bottom direction
+
+package "Identity Provider (IdP)" {
+  rectangle "Roles\n• data_scientist\n• ml_engineer\n• auditor" as ROLES
+}
+
+package "Policy Engine (e.g., OPA)" {
+  rectangle "ABAC Rules\n(Rego)" as POLICY
+}
+
+package "Service Mesh" {
+  rectangle "mTLS Cert Issuer\n(Workload Identity)" as MESH
+}
+
+database "Feature Store" as FS
+database "Model Registry" as REG
+queue "CI/CD Runner" as CI_CD_RUNNER
+node "Inference Pods" as INF
+
+ROLES -->> POLICY : user/service account \nattributes (e.g., JWT claims)
+MESH -->> POLICY  : workload identity \nattributes (e.g., from mTLS cert)
+
+POLICY -->> FS    : Decision: Allow/Deny
+POLICY -->> REG   : Decision: Allow/Deny
+
+CI_CD_RUNNER -->> FS      : requests access \n(e.g., read features)
+INF -up->> FS     : requests access \n(e.g., read online features)
+INF -->> REG    : requests access \n(e.g., pull model)
+@enduml

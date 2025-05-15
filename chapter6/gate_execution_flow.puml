@@ -1,0 +1,32 @@
+@startuml
+title Simplified ML pipeline example with validation gates
+
+skinparam shadowing false
+skinparam rectangleBorderColor #4A7AC7
+skinparam rectangleBackgroundColor #EFF5FF
+skinparam queueBackgroundColor #F0E68C   // CI/CD System
+skinparam databaseBackgroundColor #E0EFFF // Registry
+skinparam nodeBackgroundColor #FFE0B2     // Deployment
+
+queue "CI/CD System\n(e.g., on PR/commit,\nscheduled run)" as CI_RUNNER
+rectangle "Data Quality\nGate" as DQ_GATE
+rectangle "Feature Sanity\nGate" as FS_GATE
+rectangle "Model Validation\nGate (Performance, Fairness, Robustness)" as MV_GATE
+database  "Model Registry\n(model marked \n'staging' or 'candidate')" as REGISTRY
+rectangle "CD Promotion Gate\n(Security Scans, Ops Checks, Final Review)" as CD_GATE
+node      "Production\nDeployment" as PROD_DEPLOY
+
+CI_RUNNER -right-> DQ_GATE : Triggers
+DQ_GATE --> FS_GATE   : On Pass
+FS_GATE --> MV_GATE   : On Pass
+MV_GATE -left-> REGISTRY  : On Pass (Registers/Updates \nModel Candidate)
+REGISTRY --> CD_GATE  : On Promotion Event \n(e.g., from 'staging' to 'prod-candidate')
+CD_GATE --> PROD_DEPLOY: On Pass (Deploys to Production)
+
+note bottom of MV_GATE
+  If any gate (DQ, FS, MV) fails:
+  - Pipeline halts
+  - Artifact tagged 'rejected'
+  - Logs to governance dashboard
+end note
+@enduml

@@ -1,0 +1,20 @@
+@startuml
+title Kyber's integrated compliance dashboard - Key Data Sources
+
+skinparam shadowing false
+skinparam rectangleBorderColor #4A7AC7
+skinparam rectangleBackgroundColor #EFF5FF
+skinparam databaseBackgroundColor #E0EFFF  // For data stores
+skinparam cloudBackgroundColor #D1E8FF     // For external/aggregated services
+skinparam componentBackgroundColor #FFE0B2 // For the dashboard UI
+
+
+database "Feature Policy Registry\n(Feature Metadata, Data Tags,\nDPIA Status Records)" as POLICY_REG
+database "Lineage Graph Database\n(Artifact & Process Provenance)" as LINEAGE_DB
+cloud "Alertmanager / SIEM\n(Security & Compliance Alerts,\nGate Failure Notifications)" as ALERT_SYS
+component "Compliance Dashboard\n(e.g., React UI with Grafana API/Embeds)" as DASHBOARD
+
+POLICY_REG --> DASHBOARD : Provides: Feature PII status,\nRetention policy adherence,\nAutomated DPIA outcomes
+LINEAGE_DB --> DASHBOARD : Enables: Lineage graph queries,\nAudit trail summarization,\nImpact analysis views
+ALERT_SYS --> DASHBOARD : Feeds: Live security alerts,\nCompliance gate failures,\nAnomalous access patterns
+@enduml
